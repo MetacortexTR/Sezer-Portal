@@ -1,0 +1,64 @@
+-- Roles tablosu
+CREATE TABLE IF NOT EXISTS roles (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    role_name VARCHAR(50) NOT NULL UNIQUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Contacts tablosu (role_id sütunu kaldırıldı)
+CREATE TABLE IF NOT EXISTS contacts (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100),
+    photo_url TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Contact Roles ilişki tablosu
+CREATE TABLE IF NOT EXISTS contact_roles (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    contact_id INT NOT NULL,
+    role_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (contact_id) REFERENCES contacts(id) ON DELETE CASCADE,
+    FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_contact_role (contact_id, role_id)
+);
+
+-- Startups tablosu
+CREATE TABLE IF NOT EXISTS startups (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL,
+    website_url TEXT,
+    linkedin_url TEXT,
+    logo_url TEXT,
+    use_case TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Startup Founders tablosu
+CREATE TABLE IF NOT EXISTS startup_founders (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    contact_id INT NOT NULL,
+    startup_id INT NOT NULL,
+    title VARCHAR(100),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (contact_id) REFERENCES contacts(id) ON DELETE CASCADE,
+    FOREIGN KEY (startup_id) REFERENCES startups(id) ON DELETE CASCADE
+);
+
+-- Mentors tablosu
+CREATE TABLE IF NOT EXISTS mentors (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    contact_id INT NOT NULL UNIQUE,
+    expertise_area TEXT,
+    mentoring_focus TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (contact_id) REFERENCES contacts(id) ON DELETE CASCADE
+); 

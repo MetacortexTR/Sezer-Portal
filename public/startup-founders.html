@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YZF Portal - Startup Kurucuları</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">YZF Portal</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Contacts</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/startups">Girişimler</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/startup-founders">Startup Kurucuları</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/mentors">Mentorlar</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>YZF Startup Kurucuları</h2>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addFounderModal">
+                <i class="fas fa-plus me-2"></i>Yeni Kurucu
+            </button>
+        </div>
+
+        <ul class="nav nav-tabs mb-4">
+            <li class="nav-item">
+                <a class="nav-link active" href="#" data-filter="all">Tümü</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-filter="founders">YZF Kurucular</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-filter="others">Diğer</a>
+            </li>
+        </ul>
+
+        <div class="row g-4" id="foundersList">
+            <!-- Founders will be loaded here dynamically -->
+        </div>
+    </div>
+
+    <!-- Add Founder Modal -->
+    <div class="modal fade" id="addFounderModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Yeni Kurucu Ekle</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addFounderForm">
+                        <div class="mb-3">
+                            <label for="contact_id" class="form-label">Girişimci</label>
+                            <div class="input-group">
+                                <select class="form-select" id="contact_id" required>
+                                    <option value="">Girişimci seçin</option>
+                                </select>
+                                <button class="btn btn-outline-primary" type="button" data-bs-toggle="modal" data-bs-target="#addContactModal">
+                                    <i class="fas fa-plus"></i> Yeni Girişimci
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="startup_id" class="form-label">Girişim</label>
+                            <div class="input-group">
+                                <select class="form-select" id="startup_id" required>
+                                    <option value="">Girişim seçin</option>
+                                </select>
+                                <button class="btn btn-outline-primary" type="button" data-bs-toggle="modal" data-bs-target="#addStartupModal">
+                                    <i class="fas fa-plus"></i> Yeni Girişim
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Unvan</label>
+                            <input type="text" class="form-control" id="title" placeholder="Örn: CEO, CTO" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="button" class="btn btn-primary" onclick="submitAddFounderForm()">Kaydet</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Founder Modal -->
+    <div class="modal fade" id="editFounderModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Kurucu Düzenle</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editFounderForm">
+                        <input type="hidden" id="edit_founder_id">
+                        <div class="mb-3">
+                            <label for="edit_contact_id" class="form-label">Girişimci</label>
+                            <div class="input-group">
+                                <select class="form-select" id="edit_contact_id" required>
+                                    <option value="">Girişimci seçin</option>
+                                </select>
+                                <button class="btn btn-outline-secondary" type="button" onclick="showEditContactModal()">
+                                    <i class="fas fa-edit"></i> Düzenle
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_startup_id" class="form-label">Girişim</label>
+                            <select class="form-select" id="edit_startup_id" required>
+                                <option value="">Girişim seçin</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_title" class="form-label">Unvan</label>
+                            <input type="text" class="form-control" id="edit_title" placeholder="Örn: CEO, CTO" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="button" class="btn btn-primary" onclick="submitEditFounderForm()">Kaydet</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteFounderModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Kurucu Sil</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    Bu kurucuyu silmek istediğinizden emin misiniz?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="button" class="btn btn-danger" onclick="confirmDeleteFounder()">Sil</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Contact Modal -->
+    <div class="modal fade" id="addContactModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Yeni Girişimci Ekle</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addContactForm">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Ad Soyad</label>
+                            <input type="text" class="form-control" id="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">E-posta</label>
+                            <input type="email" class="form-control" id="email">
+                        </div>
+                        <div class="mb-3">
+                            <label for="photo_url" class="form-label">Fotoğraf URL</label>
+                            <input type="url" class="form-control" id="photo_url">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="button" class="btn btn-primary" onclick="submitAddContactForm()">Kaydet</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Startup Modal -->
+    <div class="modal fade" id="addStartupModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Yeni Girişim Ekle</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addStartupForm">
+                        <div class="mb-3">
+                            <label for="startup_name" class="form-label">Girişim Adı</label>
+                            <input type="text" class="form-control" id="startup_name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="startup_website_url" class="form-label">Website URL</label>
+                            <input type="url" class="form-control" id="startup_website_url">
+                        </div>
+                        <div class="mb-3">
+                            <label for="startup_linkedin_url" class="form-label">LinkedIn URL</label>
+                            <input type="url" class="form-control" id="startup_linkedin_url">
+                        </div>
+                        <div class="mb-3">
+                            <label for="startup_logo_url" class="form-label">Logo URL</label>
+                            <input type="url" class="form-control" id="startup_logo_url">
+                        </div>
+                        <div class="mb-3">
+                            <label for="startup_use_case" class="form-label">Use Case</label>
+                            <textarea class="form-control" id="startup_use_case" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="button" class="btn btn-primary" onclick="submitAddStartupForm()">Kaydet</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Contact Modal -->
+    <div class="modal fade" id="editContactModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Contact Düzenle</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editContactForm">
+                        <input type="hidden" id="edit_contact_form_id">
+                        <div class="mb-3">
+                            <label for="edit_contact_name" class="form-label">Ad Soyad</label>
+                            <input type="text" class="form-control" id="edit_contact_name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_contact_email" class="form-label">E-posta</label>
+                            <input type="email" class="form-control" id="edit_contact_email">
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_contact_photo_url" class="form-label">Fotoğraf URL</label>
+                            <input type="url" class="form-control" id="edit_contact_photo_url">
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_contact_roles" class="form-label">Roller</label>
+                            <select class="form-select" id="edit_contact_roles" multiple>
+                                <!-- Roller buraya dinamik olarak eklenecek -->
+                            </select>
+                            <small class="form-text text-muted">Birden fazla rol seçmek için CTRL tuşuna basılı tutarak seçim yapabilirsiniz.</small>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="button" class="btn btn-primary" onclick="submitEditContactForm()">Güncelle</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/startup-founders.js"></script>
+</body>
+</html> 

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YZF Portal - Mentorlar</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">YZF Portal</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Contacts</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/startups">Girişimler</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/startup-founders">Startup Kurucuları</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/mentors">Mentorlar</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>YZF Mentorları</h2>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addMentorModal">
+                <i class="fas fa-plus"></i> Yeni Mentor
+            </button>
+        </div>
+
+        <!-- Mentors List -->
+        <div class="row" id="mentorsList">
+            <!-- Mentorlar buraya dinamik olarak yüklenecek -->
+        </div>
+    </div>
+
+    <!-- Mentor Ekleme Modalı -->
+    <div class="modal fade" id="addMentorModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Yeni Mentor Ekle</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addMentorForm">
+                        <input type="hidden" id="role_id">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Ad Soyad</label>
+                            <input type="text" class="form-control" id="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">E-posta</label>
+                            <input type="email" class="form-control" id="email">
+                        </div>
+                        <div class="mb-3">
+                            <label for="photo_url" class="form-label">Fotoğraf URL</label>
+                            <input type="url" class="form-control" id="photo_url">
+                        </div>
+                        <div class="mb-3">
+                            <label for="expertise_area" class="form-label">Uzmanlık Alanı</label>
+                            <textarea class="form-control" id="expertise_area" rows="2"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="mentoring_focus" class="form-label">Mentorluk Odağı</label>
+                            <textarea class="form-control" id="mentoring_focus" rows="2"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="button" class="btn btn-primary" onclick="submitAddMentorForm()">Ekle</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mentor Düzenleme Modalı -->
+    <div class="modal fade" id="editMentorModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Mentor Düzenle</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editMentorForm">
+                        <input type="hidden" id="edit_mentor_id">
+                        <div class="mb-3">
+                            <label for="edit_contact" class="form-label">Ad Soyad</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="edit_contact" readonly>
+                                <button type="button" class="btn btn-outline-secondary" onclick="editContact()">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_expertise_area" class="form-label">Uzmanlık Alanı</label>
+                            <textarea class="form-control" id="edit_expertise_area" rows="2"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_mentoring_focus" class="form-label">Mentorluk Odağı</label>
+                            <textarea class="form-control" id="edit_mentoring_focus" rows="2"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="button" class="btn btn-primary" onclick="submitEditMentorForm()">Kaydet</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mentor Silme Modalı -->
+    <div class="modal fade" id="deleteMentorModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Mentor Sil</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Bu mentoru silmek istediğinizden emin misiniz?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="button" class="btn btn-danger" onclick="confirmDeleteMentor()">Sil</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Düzenleme Modalı -->
+    <div class="modal fade" id="editContactModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Contact Düzenle</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editContactForm">
+                        <input type="hidden" id="contact_id">
+                        <div class="mb-3">
+                            <label for="contact_name" class="form-label">Ad Soyad</label>
+                            <input type="text" class="form-control" id="contact_name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="contact_email" class="form-label">E-posta</label>
+                            <input type="email" class="form-control" id="contact_email">
+                        </div>
+                        <div class="mb-3">
+                            <label for="contact_photo_url" class="form-label">Fotoğraf URL</label>
+                            <input type="url" class="form-control" id="contact_photo_url">
+                        </div>
+                        <div class="mb-3">
+                            <label for="contact_role" class="form-label">Ana Rol</label>
+                            <select class="form-select" id="contact_role" required>
+                                <option value="">Rol seçin...</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="contact_additional_roles" class="form-label">Ek Roller</label>
+                            <select class="form-select" id="contact_additional_roles" multiple size="4">
+                            </select>
+                            <div class="form-text">Birden fazla rol seçmek için CTRL tuşuna basılı tutarak seçim yapabilirsiniz.</div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeContactModal()">İptal</button>
+                    <button type="button" class="btn btn-primary" onclick="submitEditContactForm()">Kaydet</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>const API_URL = 'http://localhost:3000/api';</script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="mentors.js"></script>
+</body>
+</html> 
